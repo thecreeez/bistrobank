@@ -26,51 +26,122 @@
 </nav>
 
 <div class="container">
-    <form method="post">
+    <form action="/api/index.php" method="post">
         <nav aria-label="Page navigation example">
             <ul class="pagination">
-                <li class="page-item active"><a class="page-link" href="#">1 Шаг</a></li>
-                <li class="page-item disabled"><a class="page-link" href="#">2 Шаг</a></li>
-                <li class="page-item disabled"><a class="page-link" href="#">3 Шаг</a></li>
+                <li class="page-item active" id="firstStep"><a class="page-link" href="#">1 Шаг</a></li>
+                <li class="page-item disabled" id="secondStep"><a class="page-link" href="#">2 Шаг</a></li>
             </ul>
         </nav>
-        <div class="form-group">
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-light">
-                    <input type="radio" name="options" id="physface" autocomplete="off" checked> Физическое лицо
-                </label>
-                <label class="btn btn-light">
-                    <input type="radio" name="options" id="urface" autocomplete="off"> Юридическое лицо
-                </label>
-            </div>
-        </div>
         <div id="face-container">
             <div class="form-group">
-                <label for="firstNameLastName">ФИО</label>
-                <input type="email" class="form-control" id="firstNameLastName" aria-describedby="emailHelp" placeholder="ФИО">
-                <small id="emailHelp" class="form-text text-muted">Только русские символы.</small>
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-light">
+                        <input type="radio" id="individualRadio" name="userType" value="individual" autocomplete="on" checked> Физическое лицо
+                    </label>
+                    <label class="btn btn-light">
+                        <input type="radio" id="entityRadio" name="userType" value="entity" autocomplete="off"> Юридическое лицо
+                    </label>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="INN">ИНН</label>
-                <input type="text" class="form-control" id="INN" placeholder="ИНН">
+            <div id="face-phys">
+                <h3>Ваши данные</h3>
+                <div class="form-group">
+                    <label for="firstNameLastName">ФИО</label>
+                    <input type="text" class="form-control" name="name" placeholder="ФИО">
+                </div>
+                <div class="form-group">
+                    <label for="INN">ИНН</label>
+                    <input type="text" class="form-control" name="inn" placeholder="ИНН">
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday">Дата рождения</label>
+                    <input type="date" class="form-control" name="birthday"><br>
+                </div>
+                    
+                <div class="form-group">
+                    <h3>Паспортные данные</h3>
+                    <label>Серия</label>
+                    <input type="text" class="form-control" name="passportFirst" placeholder="Серия">
+                    <label>Номер</label>
+                    <input type="text" class="form-control" name="passportSecond" placeholder="Номер">
+                    <label>Дата выдачи</label>
+                    <input type="date" class="form-control" name="passportDate">
+                </div><br>
             </div>
-            <div class="form-group">
-                <label for="Birthday">Дата рождения</label>
-                <input type="date" class="form-control" id="Birthday"><br>
+
+            <div id="face-ur" hidden>
+                <div class="form-group">
+                    <h3>Данные руководителя</h3>
+                    <div class="form-group">
+                        <label for="firstNameLastName">ФИО</label>
+                        <input type="text" class="form-control" name="name" placeholder="ФИО руководителя">
+                    </div>
+                    <div class="form-group">
+                        <label for="INN">ИНН</label>
+                        <input type="text" class="form-control" name="inn" placeholder="ИНН руководителя">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h3>Данные организации</h3>
+                    <div class="form-group">
+                        <label>Наименование</label>
+                        <input type="text" class="form-control" name="organizationName" placeholder="Наименование организации">
+                        <label>Адрес</label>
+                        <input type="text" class="form-control" name="organizationAddress" placeholder="Адрес организации">
+                        <label>ОГРН</label>
+                        <input type="text" class="form-control" name="organizationOGRN" placeholder="ОГРН">
+                        <label>ИНН</label>
+                        <input type="text" class="form-control" name="organizationINN" placeholder="ИНН">
+                        <label>КПП</label>
+                        <input type="text" class="form-control" name="organizationKPP" placeholder="КПП">
+                    </div>
+                </div>
             </div>
-                
-            <div class="form-group">
-                <h3>Паспортные данные</h3>
-                <label>Серия</label>
-                <input type="text" class="form-control" id="passportFirst" placeholder="Серия">
-                <label>Номер</label>
-                <input type="text" class="form-control" id="passportSecond" placeholder="Номер">
-                <label>Дата выдачи</label>
-                <input type="date" class="form-control" id="passportDate">
-            </div><br>
         </div>
-        <button id="next" class="btn btn-primary">Дальше</button>
+
+        <div id="product-container" hidden>
+            <div class="form-group">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-light">
+                        <input type="radio" id="creditRadio" name="productType" value="credit" autocomplete="on" checked> Кредит
+                    </label>
+                    <label class="btn btn-light">
+                        <input type="radio" id="depositRadio" name="productType" value="deposit" autocomplete="off"> Вклад
+                    </label>
+                </div>
+            </div>
+
+            <div id="credit-container">
+                <h3>Кредит</h3>
+                <div class="form-group">
+                    <label>Дата открытия</label>
+                    <input type="date" class="form-control" name="creditOpenDate" placeholder="Дата открытия">
+                    <label>Дата закрытия</label>
+                    <input type="date" class="form-control" name="creditCloseDate" placeholder="Дата закрытия">
+                    <label>Сумма</label>
+                    <input type="text" class="form-control" name="creditSummary" placeholder="Сумма">
+                </div>
+            </div>
+
+            <div id="deposit-container" hidden>
+                <h3>Вклад</h3>
+                <div class="form-group">
+                    <label>Дата открытия</label>
+                    <input type="date" class="form-control" name="depositOpenDate" placeholder="Дата открытия">
+                    <label>Дата закрытия</label>
+                    <input type="date" class="form-control" name="depositCloseDate" placeholder="Дата закрытия">
+                    <label>Сумма</label>
+                    <input type="text" class="form-control" name="depositBet" placeholder="Сумма">
+                </div>
+            </div>
+
+            <div id="back" class="btn btn-primary">Назад</div>
+            <button class="btn btn-primary">Отправить заявку</button>
+        </div>
     </form>
+    <button id="next" class="btn btn-primary">Дальше</button>
 </div>
 <script src="/static/scripts.js"></script>
 </body>

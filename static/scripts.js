@@ -1,36 +1,64 @@
-const DEFAULT_FORM = `
-<div class="form-group">
-                <label for="firstNameLastName">ФИО</label>
-                <input type="email" class="form-control" id="firstNameLastName" aria-describedby="emailHelp" placeholder="ФИО">
-                <small id="emailHelp" class="form-text text-muted">Только русские символы.</small>
-            </div>
-            <div class="form-group">
-                <label for="INN">ИНН</label>
-                <input type="text" class="form-control" id="INN" placeholder="ИНН">
-            </div>`
-
-const PHYSFACE_FORM = `<div class="form-group">
-<label for="Birthday">Дата рождения</label>
-<input type="date" class="form-control" id="Birthday"><br>
-</div>
-
-<div class="form-group">
-<h3>Паспортные данные</h3>
-<label>Серия</label>
-<input type="text" class="form-control" id="passportFirst" placeholder="Серия">
-<label>Номер</label>
-<input type="text" class="form-control" id="passportSecond" placeholder="Номер">
-<label>Дата выдачи</label>
-<input type="date" class="form-control" id="passportDate">
-</div><br>`
-
-const URFACE_FORM = `<h1>WIP</h1>`
-
-document.getElementById("physface").onclick = () => {
-    console.log(1);
-    document.getElementById("face-container").innerHTML = DEFAULT_FORM + PHYSFACE_FORM;
+document.getElementById("individualRadio").onclick = () => {
+    document.getElementById("face-ur").hidden = true;
+    document.getElementById("face-phys").hidden = false;
 }
 
-document.getElementById("urface").onclick = () => {
-    document.getElementById("face-container").innerHTML = DEFAULT_FORM + URFACE_FORM;
+document.getElementById("entityRadio").onclick = () => {
+    document.getElementById("face-ur").hidden = false;
+    document.getElementById("face-phys").hidden = true;
+}
+
+document.getElementById("next").onclick = () => {
+    console.log("Переход на второй шаг...");
+
+    const type = document.getElementById("face-ur").hidden ? "individual" : "entity";
+
+    let isFieldsRight = true;
+
+    switch (type) {
+        case "individual": {
+            console.log("Проверка полей физического лица...")
+            break;
+        }
+
+        case "entity": {
+            console.log("Проверка полей юр лица...")
+            break;
+        }
+    }
+
+    if (!isFieldsRight)
+        return;
+
+    invokeSecondStep(type);
+}
+
+function invokeSecondStep() {
+    document.getElementById("face-container").hidden = true;
+    document.getElementById("product-container").hidden = false;
+    document.getElementById("next").hidden = true;
+
+    document.getElementById("firstStep").classList = "page-item disabled"
+    document.getElementById("secondStep").classList = "page-item active"
+}
+
+function invokeFirstStep() {
+    document.getElementById("face-container").hidden = false;
+    document.getElementById("product-container").hidden = true;
+    document.getElementById("next").hidden = false;
+
+    document.getElementById("firstStep").classList = "page-item active"
+    document.getElementById("secondStep").classList = "page-item disabled"
+}
+
+document.getElementById("back").onclick = invokeFirstStep;
+
+document.getElementById("creditRadio").onclick = () => {
+    document.getElementById("deposit-container").hidden = true;
+    document.getElementById("credit-container").hidden = false;
+}
+
+document.getElementById("depositRadio").onclick = () => {
+    document.getElementById("deposit-container").hidden = false;
+    document.getElementById("credit-container").hidden = true;
 }
