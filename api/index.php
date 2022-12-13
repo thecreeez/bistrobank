@@ -1,8 +1,24 @@
 <?php
-    require_once('./database.php');
+    require_once('./Application.php');
 
-    $userType = $_POST['userType'];
-    $name = $_POST['name'];
-    $inn = $_POST['inn'];
+function route($params) {
+    $app = Application::getInstance();
+    $userType = $params['userType'];
+    $productType = $params['productType'];
 
-    echo serialize($_POST);
+    if (!count($app->getUserWrongFields($userType, $params)) == 0)
+        return $app->showErrorPage($app->getUserWrongFields($userType, $params));
+
+    switch ($productType) {
+        case 'credit': 
+            return $app->createCreditTicket($params);
+            break;
+        case 'deposit': 
+            return $app->createDepositTicket($params);
+            break;
+        default: 
+            return $app->showErrorPage(array('unexpectedProductType'));
+    }
+}
+
+echo route($_POST);
