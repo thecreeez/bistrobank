@@ -6,6 +6,10 @@ function route($params) {
     $userType = $params['userType'];
     $productType = $params['productType'];
 
+    if ($app->checkModules() != 'OK') {
+        return 'Проверка модулей выявила неисправность: '.$app->checkModules();
+    }
+
     if (!count($app->getUserWrongFields($userType, $params)) == 0)
         return $app->showErrorPage($app->getUserWrongFields($userType, $params));
 

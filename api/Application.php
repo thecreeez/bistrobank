@@ -1,7 +1,9 @@
 <?php
+    require_once('./Database.php');
 
 class Application {
     private static $instance;
+    private $db;
     
     public static function getInstance()
     {
@@ -12,7 +14,7 @@ class Application {
     }
 
     private function __construct() {
-        //$db = new Database();
+        $this->db = Database::getInstance();
     }
 
     private function __clone() {
@@ -93,11 +95,11 @@ class Application {
 
         $inn = $params['eInn'];
 
-        if (strlen($eInn) != 12) {
+        if (strlen($inn) != 12) {
             array_push($errors, 'ИНН должен содержать 12 символов');
         }
 
-        if (!preg_match("/^([0-9])+$/", $eInn)) {
+        if (!preg_match("/^([0-9])+$/", $inn)) {
             array_push($errors, 'ИНН может содержать только цифры');
         }
 
@@ -156,20 +158,39 @@ class Application {
         return $errors;
     }
 
-    public function createCreditTicket($params) {
-        if (count($this->getErrorCreditFields($params)) != 0) {
-            return serialize($this->getErrorCreditFields($params));
+    private function getUser($params) {
+        $fio = '';
+        $inn = '';
+        $data = array(
+            'userType' => $params['userType']
+        );
+
+        if ($params['userType'] == 'individual') {
+            $fio = $params['name'];
+            $inn = $params['inn'];
+
+            $data['birthday'] = $params['birthday'];
+            $data['passportFirst'] = $params['passportFirst'];
+            $data['passportSecond'] = $params['passportSecond'];
+            $data['passportDate'] = $params['passportDate'];
+        } else {
+            $fio = $params['eName'];
+            $inn = $params['eInn'];
+
+            $data['organizationName'] = $params['organizationName'];
+            $data['organizationAddress'] = $params['organizationAddress'];
+            $data['organizationOGRN'] = $params['organizationOGRN'];
+            $data['organizationINN'] = $params['organizationINN'];
+            $data['organizationKPP'] = $params['organizationKPP'];
         }
 
-        $inn = $params['userType'] == 'individual' ? $params['inn'] : $params['eInn'];
-
-        $user = $db->getUserByINN($inn);
+        $user = $this->db->getUserByINN($inn);
 
         if (!$user) {
-            $user = $db->insertUser($params);
+            $user = $this->db->insertUser($fio, $inn, $data);
         }
 
-        return $db->insertDepositTicket($user, $params['creditOpenDate'], $params['creditCloseDate'], $params['creditBet']);
+        return $user;
     }
 
     private function getErrorDepositFields($params) {
@@ -191,22 +212,44 @@ class Application {
         return $errors;
     }
 
+    public function createCreditTicket($params) {
+        if (count($this->getErrorCreditFields($params)) != 0) {
+            return serialize($this->getErrorCreditFields($params));
+        }
+        $user = $this->getUser($params);
+
+        $answer = $this->db->insertCreditTicket($user['id'], $params['creditOpenDate'], $params['creditCloseDate'], $params['creditSummary']);
+
+        $this->db->close();
+
+        return $answer;
+    }
+
     public function createDepositTicket($params) {
         if (count($this->getErrorDepositFields($params)) != 0) {
             return serialize($this->getErrorDepositFields($params));
         }
-        $inn = $params['userType'] == 'individual' ? $params['inn'] : $params['eInn'];
+        $user = $this->getUser($params);
 
-        $user = $db->getUserByINN($inn);
+        $answer = $this->db->insertDepositTicket($user['id'], $params['depositOpenDate'], $params['depositCloseDate'], $params['depositBet']);
 
-        if (!$user) {
-            $user = $db->insertUser($params);
-        }
+        $this->db->close();
 
-        $db->insertDepositTicket($user, $params['depositOpenDate'], $params['depositCloseDate'], $params['depositBet']);
+        return $answer;
+    }
+
+    public function getUserByINN($inn) {
+        $toReturn = $this->db->getUserByINN($inn);
+
+        $this->db->close();
+        return $toReturn;
     }
 
     public function showErrorPage($errors) {
         return serialize($errors);
+    }
+
+    public function checkModules() {
+        return $this->db->check();
     }
 }
